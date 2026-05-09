@@ -2,53 +2,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  padding: 24px 28px 18px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--accent);
   color: white;
   font-weight: 700;
-  margin-bottom: 16px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-h);
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
-.subtitle {
-  margin: 6px 0 0;
-  color: var(--text);
-  max-width: 560px;
+  letter-spacing: -0.01em;
 }
 
 .themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--border);
   background: var(--surface-muted);
   color: var(--text-h);
-  border-radius: 999px;
-  padding: 10px 16px;
+  border-radius: 50%;
   cursor: pointer;
-  font-weight: 600;
-  font-size: inherit;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
 }
 
 .themeToggle:hover {
   background: var(--accent-bg);
-  transform: translateY(-1px);
+  transform: scale(1.08);
 }
 
 .themeToggle:focus-visible {
@@ -56,18 +60,7 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 840px) {
-  .header { padding-left: 18px; padding-right: 18px; }
-  .title  { font-size: 24px; }
-}
-
 @media (orientation: landscape) and (max-height: 500px) {
-  .header {
-    padding: 8px 18px;
-    flex-direction: row;
-    align-items: center;
-  }
-  .badge    { display: none; }
-  .subtitle { display: none; }
-  .title    { font-size: 16px; margin: 0; }
+  .header { padding: 8px 16px; }
+  .badge  { width: 24px; height: 24px; font-size: 11px; }
 }
