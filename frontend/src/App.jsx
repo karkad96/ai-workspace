@@ -8,12 +8,13 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') ?? 'light');
   const messageListRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   useEffect(() => {
