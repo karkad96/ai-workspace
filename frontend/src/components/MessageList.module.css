@@ -47,3 +47,8 @@
 @media (max-width: 840px) {
   .panel { padding-left: 18px; padding-right: 18px; }
 }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .panel { padding: 8px 18px; }
+  .list  { gap: 10px; }
+}

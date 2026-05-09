@@ -71,3 +71,9 @@
 
   .sendButton { width: 100%; }
 }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .composer { padding: 8px 18px; }
+  .textarea  { min-height: 40px; rows: 1; }
+  .sendButton, .stopButton { height: 40px; }
+}

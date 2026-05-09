@@ -60,3 +60,14 @@
   .header { padding-left: 18px; padding-right: 18px; }
   .title  { font-size: 24px; }
 }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .header {
+    padding: 8px 18px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .badge    { display: none; }
+  .subtitle { display: none; }
+  .title    { font-size: 16px; margin: 0; }
+}

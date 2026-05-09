@@ -77,6 +77,10 @@ body {
   background: var(--bg);
 }
 
+@media (orientation: landscape) and (max-height: 500px) {
+  #root { padding: 0; }
+}
+
 
 /* ── Highlight.js dark-mode ──────────────────────────────── */
 :root[data-theme="dark"] .hljs              { background: var(--code-bg); color: #abb2bf; }

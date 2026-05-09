@@ -13,3 +13,10 @@
 @media (max-width: 840px) {
   .shell { border-radius: 20px; }
 }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .shell {
+    height: 100svh;
+    border-radius: 0;
+  }
+}
