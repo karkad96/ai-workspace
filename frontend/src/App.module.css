@@ -1,0 +1,15 @@
+.shell {
+  width: min(1040px, 100%);
+  display: flex;
+  flex-direction: column;
+  height: calc(100svh - 48px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+@media (max-width: 840px) {
+  .shell { border-radius: 20px; }
+}

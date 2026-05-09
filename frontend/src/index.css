@@ -1,0 +1,98 @@
+/* ── Color tokens ───────────────────────────────────────── */
+:root {
+  --text: #2f2d38;
+  --text-h: #111827;
+  --bg: #eff1f8;
+  --surface: #ffffff;
+  --surface-muted: #f4f5fb;
+  --border: #d5d8e3;
+  --code-bg: #f4f3ec;
+  --accent: #7c4dff;
+  --accent-strong: #9333ea;
+  --accent-bg: rgba(124, 77, 255, 0.12);
+  --shadow: rgba(24, 37, 80, 0.08) 0 20px 50px -20px;
+  --shadow-strong: rgba(124, 77, 255, 0.18) 0 20px 40px -18px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.02em;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root[data-theme="dark"] {
+  --text: #e5e7eb;
+  --text-h: #f8fafc;
+  --bg: #0f172a;
+  --surface: #111827;
+  --surface-muted: #1f2937;
+  --border: #334155;
+  --code-bg: #1e293b;
+  --accent: #8b5cf6;
+  --accent-strong: #c4b5fd;
+  --accent-bg: rgba(139, 92, 246, 0.18);
+  --shadow: rgba(0, 0, 0, 0.45) 0 20px 50px -20px;
+  --shadow-strong: rgba(139, 92, 246, 0.32) 0 20px 40px -18px;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --text: #e5e7eb;
+    --text-h: #f8fafc;
+    --bg: #0f172a;
+    --surface: #111827;
+    --surface-muted: #1f2937;
+    --border: #334155;
+    --code-bg: #1e293b;
+    --accent: #8b5cf6;
+    --accent-strong: #c4b5fd;
+    --accent-bg: rgba(139, 92, 246, 0.18);
+    --shadow: rgba(0, 0, 0, 0.45) 0 20px 50px -20px;
+    --shadow-strong: rgba(139, 92, 246, 0.32) 0 20px 40px -18px;
+    color-scheme: dark;
+  }
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#root {
+  height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+
+/* ── Highlight.js dark-mode ──────────────────────────────── */
+:root[data-theme="dark"] .hljs              { background: var(--code-bg); color: #abb2bf; }
+:root[data-theme="dark"] .hljs-keyword,
+:root[data-theme="dark"] .hljs-selector-tag { color: #c678dd; }
+:root[data-theme="dark"] .hljs-string,
+:root[data-theme="dark"] .hljs-attr         { color: #98c379; }
+:root[data-theme="dark"] .hljs-number,
+:root[data-theme="dark"] .hljs-literal      { color: #d19a66; }
+:root[data-theme="dark"] .hljs-comment      { color: #5c6370; font-style: italic; }
+:root[data-theme="dark"] .hljs-title,
+:root[data-theme="dark"] .hljs-name         { color: #61afef; }
+:root[data-theme="dark"] .hljs-type,
+:root[data-theme="dark"] .hljs-built_in     { color: #e5c07b; }
+:root[data-theme="dark"] .hljs-variable,
+:root[data-theme="dark"] .hljs-params       { color: #e06c75; }
+
+/* ── KaTeX ───────────────────────────────────────────────── */
+:root[data-theme="dark"] .katex { color: var(--text-h); }

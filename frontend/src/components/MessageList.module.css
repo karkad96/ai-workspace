@@ -1,0 +1,49 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 24px 28px;
+  overflow: hidden;
+  background: var(--surface-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 18px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0;
+}
+
+@media (max-width: 840px) {
+  .panel { padding-left: 18px; padding-right: 18px; }
+}
