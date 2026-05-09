@@ -19,7 +19,9 @@ export default function App() {
 
   useEffect(() => {
     const el = messageListRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (distanceFromBottom < 80) el.scrollTop = el.scrollHeight;
   }, [chat]);
 
   const stopStreaming = () => {
