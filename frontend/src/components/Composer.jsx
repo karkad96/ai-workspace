@@ -1,6 +1,6 @@
 import styles from './Composer.module.css';
 
-export default function Composer({ message, isStreaming, onChange, onSend }) {
+export default function Composer({ message, isStreaming, onChange, onSend, onStop }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -16,16 +16,23 @@ export default function Composer({ message, isStreaming, onChange, onSend }) {
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message here..."
-        disabled={isStreaming}
         rows={2}
       />
-      <button
-        className={styles.sendButton}
-        onClick={onSend}
-        disabled={isStreaming || !message.trim()}
-      >
-        {isStreaming ? 'Streaming...' : 'Send'}
-      </button>
+      {isStreaming ? (
+        <button className={`${styles.sendButton} ${styles.stopButton}`} onClick={onStop}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+          </svg>
+        </button>
+      ) : (
+        <button
+          className={styles.sendButton}
+          onClick={onSend}
+          disabled={!message.trim()}
+        >
+          Send
+        </button>
+      )}
     </div>
   );
 }

@@ -27,9 +27,6 @@
   box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
-.textarea:disabled {
-  opacity: 0.7;
-}
 
 .sendButton {
   min-width: 120px;
@@ -53,6 +50,15 @@
 .sendButton:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+.stopButton {
+  background: var(--error, #e53e3e);
+  min-width: auto;
+  width: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 840px) {

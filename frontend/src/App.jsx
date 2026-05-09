@@ -10,6 +10,7 @@ export default function App() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [theme, setTheme] = useState('light');
   const messageListRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -20,12 +21,25 @@ export default function App() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [chat]);
 
+  const stopStreaming = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsStreaming(false);
+  };
+
   const sendMessage = async () => {
-    if (!message.trim() || isStreaming) return;
+    if (!message.trim()) return;
+
+    if (isStreaming) stopStreaming();
 
     const outgoing = message.trim();
     setMessage('');
     setIsStreaming(true);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     let currentIndex = -1;
     setChat((prev) => {
@@ -33,30 +47,36 @@ export default function App() {
       return [...prev, { user: outgoing, bot: '' }];
     });
 
-    const res = await fetch('/api/chat-stream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: outgoing }),
-    });
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let botText = '';
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      botText += decoder.decode(value, { stream: true });
-      setChat((prev) => {
-        const updated = [...prev];
-        if (currentIndex >= 0 && currentIndex < updated.length) {
-          updated[currentIndex] = { ...updated[currentIndex], bot: botText };
-        }
-        return updated;
+    try {
+      const res = await fetch('/api/chat-stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: outgoing }),
+        signal: controller.signal,
       });
-    }
 
-    setIsStreaming(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let botText = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        botText += decoder.decode(value, { stream: true });
+        setChat((prev) => {
+          const updated = [...prev];
+          if (currentIndex >= 0 && currentIndex < updated.length) {
+            updated[currentIndex] = { ...updated[currentIndex], bot: botText };
+          }
+          return updated;
+        });
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') throw err;
+    } finally {
+      abortControllerRef.current = null;
+      setIsStreaming(false);
+    }
   };
 
   return (
@@ -75,6 +95,7 @@ export default function App() {
         isStreaming={isStreaming}
         onChange={setMessage}
         onSend={sendMessage}
+        onStop={stopStreaming}
       />
     </div>
   );
