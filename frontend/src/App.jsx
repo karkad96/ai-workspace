@@ -1,14 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
+import LoginModal from './components/LoginModal';
 import MessageList from './components/MessageList';
 import Composer from './components/Composer';
 import styles from './App.module.css';
+
+function loadUser() {
+  try {
+    const stored = localStorage.getItem('auth');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function App() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') ?? 'light');
+  const [user, setUser] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
   const messageListRef = useRef(null);
   const abortControllerRef = useRef(null);
 
@@ -23,6 +35,41 @@ export default function App() {
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
     if (distanceFromBottom < 80) el.scrollTop = el.scrollHeight;
   }, [chat]);
+
+  // Restore session on mount and load history
+  useEffect(() => {
+    const stored = loadUser();
+    if (!stored) return;
+
+    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${stored.token}` } })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(() => {
+        setUser(stored);
+        return fetch('/api/history', { headers: { Authorization: `Bearer ${stored.token}` } });
+      })
+      .then((r) => r.json())
+      .then((history) => setChat(history))
+      .catch(() => {
+        localStorage.removeItem('auth');
+      });
+  }, []);
+
+  const handleLoginSuccess = (data) => {
+    const userData = { email: data.email, token: data.token };
+    localStorage.setItem('auth', JSON.stringify(userData));
+    setUser(userData);
+    setShowAuth(false);
+
+    fetch('/api/history', { headers: { Authorization: `Bearer ${data.token}` } })
+      .then((r) => r.json())
+      .then((history) => setChat(history));
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('auth');
+    setUser(null);
+    setChat([]);
+  };
 
   const stopStreaming = () => {
     if (abortControllerRef.current) {
@@ -51,9 +98,12 @@ export default function App() {
     });
 
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (user) headers['Authorization'] = `Bearer ${user.token}`;
+
       const res = await fetch('/api/chat-stream', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ message: outgoing }),
         signal: controller.signal,
       });
@@ -87,6 +137,9 @@ export default function App() {
       <Header
         theme={theme}
         onThemeToggle={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+        user={user}
+        onSignIn={() => setShowAuth(true)}
+        onSignOut={handleSignOut}
       />
       <MessageList
         chat={chat}
@@ -100,6 +153,12 @@ export default function App() {
         onSend={sendMessage}
         onStop={stopStreaming}
       />
+      {showAuth && (
+        <LoginModal
+          onClose={() => setShowAuth(false)}
+          onSuccess={handleLoginSuccess}
+        />
+      )}
     </div>
   );
 }
