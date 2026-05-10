@@ -1,12 +1,19 @@
-import { MoonIcon, SunIcon } from '../icons';
+import { MenuIcon, MoonIcon, SunIcon } from '../icons';
 import styles from './Header.module.css';
 
-export default function Header({ theme, onThemeToggle, user, onSignIn, onSignOut }) {
+export default function Header({ theme, onThemeToggle, user, onSignIn, onSignOut, onToggleSidebar }) {
   return (
     <header className={styles.header}>
-      <div className={styles.brand}>
-        <div className={styles.badge}>AI</div>
-        <span className={styles.title}>AI Chat</span>
+      <div className={styles.left}>
+        {user && (
+          <button type="button" className={styles.iconBtn} onClick={onToggleSidebar} aria-label="Toggle sidebar">
+            <MenuIcon />
+          </button>
+        )}
+        <div className={styles.brand}>
+          <div className={styles.badge}>AI</div>
+          <span className={styles.title}>AI Chat</span>
+        </div>
       </div>
 
       <div className={styles.actions}>
@@ -23,7 +30,7 @@ export default function Header({ theme, onThemeToggle, user, onSignIn, onSignOut
           </button>
         )}
 
-        <button type="button" className={styles.themeToggle} onClick={onThemeToggle}>
+        <button type="button" className={styles.iconBtn} onClick={onThemeToggle} aria-label="Toggle theme">
           {theme === 'light' ? <MoonIcon /> : <SunIcon />}
         </button>
       </div>

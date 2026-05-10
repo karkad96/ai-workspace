@@ -1,12 +1,21 @@
 .shell {
-  width: min(1040px, 100%);
+  width: min(1200px, 100%);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: calc(100svh - 48px);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 28px;
   box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -14,9 +23,18 @@
   .shell { border-radius: 20px; }
 }
 
+@media (max-width: 640px) {
+  .shell {
+    width: 100%;
+    height: calc(100svh - 24px);
+    border-radius: 16px;
+  }
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
   .shell {
     height: 100svh;
     border-radius: 0;
+    width: 100%;
   }
 }

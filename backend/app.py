@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from config import CORS_ORIGINS
 from auth import (
     TokenData,
     create_access_token,
@@ -14,7 +15,17 @@ from auth import (
     hash_password,
     verify_password,
 )
-from database import create_user, get_history, get_user_by_email, init_db, save_history
+from database import (
+    create_conversation,
+    create_user,
+    delete_conversation,
+    get_conversation,
+    get_conversation_messages,
+    get_conversations,
+    get_user_by_email,
+    init_db,
+    save_message,
+)
 from llm import stream_chat_with_model
 
 
@@ -28,12 +39,15 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Conversation-Id"],
 )
 
+
+# ── Auth ──────────────────────────────────────────────────────────────────
 
 class AuthRequest(BaseModel):
     email: str
@@ -63,13 +77,42 @@ def me(user: TokenData = Depends(get_required_user)):
     return {"email": user.email}
 
 
-@app.get("/history")
-def chat_history(user: TokenData = Depends(get_required_user)):
-    return get_history(user.user_id)
+# ── Conversations ─────────────────────────────────────────────────────────
 
+class ConversationRequest(BaseModel):
+    title: str
+
+
+@app.get("/conversations")
+def list_conversations(user: TokenData = Depends(get_required_user)):
+    return get_conversations(user.user_id)
+
+
+@app.post("/conversations")
+def new_conversation(req: ConversationRequest, user: TokenData = Depends(get_required_user)):
+    return create_conversation(user.user_id, req.title)
+
+
+@app.get("/conversations/{conv_id}/messages")
+def conversation_messages(conv_id: int, user: TokenData = Depends(get_required_user)):
+    if not get_conversation(conv_id, user.user_id):
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return get_conversation_messages(conv_id, user.user_id)
+
+
+@app.delete("/conversations/{conv_id}")
+def remove_conversation(conv_id: int, user: TokenData = Depends(get_required_user)):
+    if not get_conversation(conv_id, user.user_id):
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    delete_conversation(conv_id, user.user_id)
+    return {"ok": True}
+
+
+# ── Chat ──────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
     message: str
+    conversation_id: Optional[int] = None
 
 
 @app.post("/chat-stream")
@@ -77,12 +120,22 @@ def chat_stream(
     req: ChatRequest,
     user: Optional[TokenData] = Depends(get_optional_user),
 ):
+    conv_id = req.conversation_id
+
+    if user and conv_id is None:
+        conv = create_conversation(user.user_id, req.message[:80])
+        conv_id = conv["id"]
+    elif user and conv_id is not None:
+        if not get_conversation(conv_id, user.user_id):
+            raise HTTPException(status_code=404, detail="Conversation not found")
+
     def generate():
         full_response = ""
         for chunk in stream_chat_with_model(req.message):
             full_response += chunk
             yield chunk
-        if user and full_response:
-            save_history(user.user_id, req.message, full_response)
+        if user and full_response and conv_id:
+            save_message(conv_id, user.user_id, req.message, full_response)
 
-    return StreamingResponse(generate(), media_type="text/plain; charset=utf-8")
+    headers = {"X-Conversation-Id": str(conv_id)} if conv_id else {}
+    return StreamingResponse(generate(), media_type="text/plain; charset=utf-8", headers=headers)

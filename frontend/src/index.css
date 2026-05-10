@@ -77,6 +77,10 @@ body {
   background: var(--bg);
 }
 
+@media (max-width: 640px) {
+  #root { padding: 12px; }
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
   #root { padding: 0; }
 }
