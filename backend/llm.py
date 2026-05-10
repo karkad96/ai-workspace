@@ -3,21 +3,6 @@ import requests
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
-def chat_with_model(prompt: str) -> str:
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": "gemma4:26b",
-            "prompt": prompt,
-            "stream": False,
-        },
-        headers={
-            "Content-Type": "application/json"
-        },
-    )
-
-    return response.json().get("response", "Error: no response")
-
 
 def stream_chat_with_model(prompt: str):
     response = requests.post(

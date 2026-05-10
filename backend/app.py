@@ -35,8 +35,6 @@ app.add_middleware(
 )
 
 
-# ── Auth ──────────────────────────────────────────────────────────────────
-
 class AuthRequest(BaseModel):
     email: str
     password: str
@@ -65,14 +63,10 @@ def me(user: TokenData = Depends(get_required_user)):
     return {"email": user.email}
 
 
-# ── Chat history ──────────────────────────────────────────────────────────
-
 @app.get("/history")
 def chat_history(user: TokenData = Depends(get_required_user)):
     return get_history(user.user_id)
 
-
-# ── Chat ──────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
     message: str

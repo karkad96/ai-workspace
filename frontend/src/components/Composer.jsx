@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { SendIcon, StopIcon } from '../icons';
 import styles from './Composer.module.css';
 
 const MAX_HEIGHT = 200;
@@ -37,9 +38,7 @@ export default function Composer({ message, isStreaming, onChange, onSend, onSto
         <div className={styles.toolbar}>
           {isStreaming ? (
             <button className={`${styles.iconButton} ${styles.stopButton}`} onClick={onStop} title="Stop">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="6" width="12" height="12" rx="2" />
-              </svg>
+              <StopIcon />
             </button>
           ) : (
             <button
@@ -48,9 +47,7 @@ export default function Composer({ message, isStreaming, onChange, onSend, onSto
               disabled={!message.trim()}
               title="Send"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
+              <SendIcon />
             </button>
           )}
         </div>
