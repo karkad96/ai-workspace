@@ -47,8 +47,6 @@ app.add_middleware(
 )
 
 
-# ── Auth ──────────────────────────────────────────────────────────────────
-
 class AuthRequest(BaseModel):
     email: str
     password: str
@@ -76,8 +74,6 @@ def login(req: AuthRequest):
 def me(user: TokenData = Depends(get_required_user)):
     return {"email": user.email}
 
-
-# ── Conversations ─────────────────────────────────────────────────────────
 
 class ConversationRequest(BaseModel):
     title: str
@@ -107,8 +103,6 @@ def remove_conversation(conv_id: int, user: TokenData = Depends(get_required_use
     delete_conversation(conv_id, user.user_id)
     return {"ok": True}
 
-
-# ── Chat ──────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
     message: str
