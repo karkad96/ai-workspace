@@ -78,7 +78,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  #root { padding: 12px; }
+  #root { padding: 16px; }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {

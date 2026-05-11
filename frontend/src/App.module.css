@@ -2,7 +2,7 @@
   width: min(1200px, 100%);
   display: flex;
   flex-direction: row;
-  height: calc(100svh - 48px);
+  height: min(900px, calc(100svh - 48px));
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 28px;
@@ -26,8 +26,8 @@
 @media (max-width: 640px) {
   .shell {
     width: 100%;
-    height: calc(100svh - 24px);
-    border-radius: 16px;
+    height: min(900px, calc(100svh - 32px));
+    border-radius: 20px;
   }
 }
 

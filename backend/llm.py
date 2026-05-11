@@ -1,25 +1,28 @@
 import json
-import requests
+import httpx
 
 from config import OLLAMA_MODEL, OLLAMA_URL
 
 
-def stream_chat_with_model(prompt: str):
-    response = requests.post(
-        OLLAMA_URL,
-        json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": True, "think": False},
-        headers={"Content-Type": "application/json"},
-        stream=True,
-        timeout=None,
-    )
-
-    for raw_line in response.iter_lines(decode_unicode=True):
-        if not raw_line:
-            continue
-        try:
-            payload = json.loads(raw_line)
-            text = payload.get("response")
-        except json.JSONDecodeError:
-            text = raw_line
-        if text:
-            yield text
+async def stream_chat_with_model(prompt: str):
+    async with httpx.AsyncClient(timeout=None) as client:
+        async with client.stream(
+            "POST",
+            OLLAMA_URL,
+            json={
+                "model": OLLAMA_MODEL,
+                "prompt": prompt,
+                "stream": True,
+                "think": False
+            },
+        ) as response:
+            async for line in response.aiter_lines():
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                    text = payload.get("response")
+                except json.JSONDecodeError:
+                    text = line
+                if text:
+                    yield text

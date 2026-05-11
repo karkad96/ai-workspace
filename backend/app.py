@@ -110,7 +110,7 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat-stream")
-def chat_stream(
+async def chat_stream(
     req: ChatRequest,
     user: Optional[TokenData] = Depends(get_optional_user),
 ):
@@ -123,13 +123,17 @@ def chat_stream(
         if not get_conversation(conv_id, user.user_id):
             raise HTTPException(status_code=404, detail="Conversation not found")
 
-    def generate():
+    async def generate():
         full_response = ""
-        for chunk in stream_chat_with_model(req.message):
+        async for chunk in stream_chat_with_model(req.message):
             full_response += chunk
             yield chunk
         if user and full_response and conv_id:
             save_message(conv_id, user.user_id, req.message, full_response)
 
     headers = {"X-Conversation-Id": str(conv_id)} if conv_id else {}
+    headers.update({
+        "X-Accel-Buffering": "no",
+        "Cache-Control": "no-cache",
+    })
     return StreamingResponse(generate(), media_type="text/plain; charset=utf-8", headers=headers)
