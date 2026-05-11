@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import LoginModal from './components/LoginModal';
 import MessageList from './components/MessageList';
@@ -14,7 +14,6 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 640);
   const [activeConvId, setActiveConvId] = useState(null);
-  const messageListRef = useRef(null);
 
   const { user, login, logout } = useAuth();
   const { conversations, addConversation, removeConversation, bumpConversation } = useConversations(user);
@@ -28,13 +27,6 @@ export default function App() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
-
-  useEffect(() => {
-    const el = messageListRef.current;
-    if (!el) return;
-    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    if (distanceFromBottom < 80) el.scrollTop = el.scrollHeight;
-  }, [chat]);
 
   // Reset conversation state when user logs out
   useEffect(() => {
@@ -91,7 +83,7 @@ export default function App() {
           onSignOut={handleLogout}
           onToggleSidebar={() => setSidebarOpen((o) => !o)}
         />
-        <MessageList chat={chat} isStreaming={isStreaming} listRef={messageListRef} />
+        <MessageList chat={chat} isStreaming={isStreaming} />
         <Composer
           message={message}
           isStreaming={isStreaming}

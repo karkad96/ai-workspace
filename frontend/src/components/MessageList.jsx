@@ -1,10 +1,36 @@
+import { useEffect, useRef } from 'react';
 import MessagePair from './MessagePair';
 import styles from './MessageList.module.css';
 
-export default function MessageList({ chat, isStreaming, listRef }) {
+export default function MessageList({ chat, isStreaming }) {
+  const containerRef = useRef(null);
+  const anchorRef = useRef(null);
+  const isAtBottomRef = useRef(true);
+  const prevLengthRef = useRef(0);
+
+  useEffect(() => {
+    const anchor = anchorRef.current;
+    const container = containerRef.current;
+    if (!anchor || !container) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { isAtBottomRef.current = entry.isIntersecting; },
+      { root: container, threshold: 0 }
+    );
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const newMessage = chat.length > prevLengthRef.current;
+    prevLengthRef.current = chat.length;
+    if (newMessage || isAtBottomRef.current) {
+      anchorRef.current?.scrollIntoView({ block: 'end' });
+    }
+  }, [chat]);
+
   return (
     <main className={styles.panel}>
-      <div className={styles.list} ref={listRef}>
+      <div className={styles.list} ref={containerRef}>
         {chat.length === 0 && (
           <div className={styles.empty}>
             <p className={styles.emptyTitle}>Ask me anything</p>
@@ -19,6 +45,7 @@ export default function MessageList({ chat, isStreaming, listRef }) {
             showTyping={isStreaming && i === chat.length - 1}
           />
         ))}
+        <div ref={anchorRef} />
       </div>
     </main>
   );
