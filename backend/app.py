@@ -107,6 +107,7 @@ def remove_conversation(conv_id: int, user: TokenData = Depends(get_required_use
 class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[int] = None
+    history: list[dict] = []
 
 
 @app.post("/chat-stream")
@@ -123,9 +124,19 @@ async def chat_stream(
         if not get_conversation(conv_id, user.user_id):
             raise HTTPException(status_code=404, detail="Conversation not found")
 
+    if user and conv_id:
+        history = get_conversation_messages(conv_id, user.user_id)
+    else:
+        history = req.history
+    messages = []
+    for turn in history:
+        messages.append({"role": "user", "content": turn["user"]})
+        messages.append({"role": "assistant", "content": turn["bot"]})
+    messages.append({"role": "user", "content": req.message})
+
     async def generate():
         full_response = ""
-        async for chunk in stream_chat_with_model(req.message):
+        async for chunk in stream_chat_with_model(messages):
             full_response += chunk
             yield chunk
         if user and full_response and conv_id:

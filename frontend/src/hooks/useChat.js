@@ -66,7 +66,7 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
       const res = await fetch('/api/chat-stream', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ message: outgoing, conversation_id: currentConvId }),
+        body: JSON.stringify({ message: outgoing, conversation_id: currentConvId, history: chat }),
         signal: controller.signal,
       });
 

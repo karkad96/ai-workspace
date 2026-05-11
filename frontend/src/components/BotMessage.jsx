@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
@@ -19,7 +20,7 @@ export default function BotMessage({ content }) {
     <ErrorBoundary content={content}>
       <div className={styles.body}>
         <ReactMarkdown
-          remarkPlugins={[remarkMath]}
+          remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex, [rehypeHighlight, { detect: true }]]}
         >
           {content}
