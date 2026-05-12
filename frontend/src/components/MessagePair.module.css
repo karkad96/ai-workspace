@@ -35,3 +35,28 @@
   color: var(--text-h);
   border: 1px solid var(--border);
 }
+
+.rowActions {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 2px;
+}
+
+.retryBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 4px;
+  font-size: 0.78em;
+  color: var(--text-muted, var(--text));
+  background: none;
+  border: 0px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.retryBtn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}

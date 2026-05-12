@@ -133,6 +133,20 @@ def get_conversation_messages(conversation_id: int, user_id: int) -> list[dict]:
         conn.close()
 
 
+def delete_last_message(conversation_id: int, user_id: int):
+    conn = _conn()
+    try:
+        row = conn.execute(
+            "SELECT id FROM chat_history WHERE conversation_id = ? AND user_id = ? ORDER BY created_at DESC LIMIT 1",
+            (conversation_id, user_id),
+        ).fetchone()
+        if row:
+            conn.execute("DELETE FROM chat_history WHERE id = ?", (row["id"],))
+            conn.commit()
+    finally:
+        conn.close()
+
+
 def save_message(conversation_id: int, user_id: int, user_msg: str, bot_msg: str):
     conn = _conn()
     try:

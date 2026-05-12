@@ -17,7 +17,7 @@ export default function App() {
 
   const { user, login, logout } = useAuth();
   const { conversations, addConversation, removeConversation, bumpConversation } = useConversations(user);
-  const { chat, message, setMessage, isStreaming, send, stop, loadConversation, newChat } = useChat(
+  const { chat, message, setMessage, isStreaming, send, stop, retry, loadConversation, newChat } = useChat(
     user,
     (conv) => { addConversation(conv); setActiveConvId(conv.id); },
     (id) => bumpConversation(id),
@@ -83,7 +83,7 @@ export default function App() {
           onSignOut={handleLogout}
           onToggleSidebar={() => setSidebarOpen((o) => !o)}
         />
-        <MessageList chat={chat} isStreaming={isStreaming} />
+        <MessageList chat={chat} isStreaming={isStreaming} onRetry={retry} />
         <Composer
           message={message}
           isStreaming={isStreaming}

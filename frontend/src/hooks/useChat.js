@@ -41,6 +41,65 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
     setMessage('');
   };
 
+  const retry = async () => {
+    if (isStreaming || chat.length === 0) return;
+
+    const lastEntry = chat[chat.length - 1];
+    const outgoing = lastEntry.user;
+    const historyWithoutLast = chat.slice(0, -1);
+    const currentConvId = convIdRef.current;
+
+    if (user && currentConvId) {
+      await fetch(`/api/conversations/${currentConvId}/messages/last`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+    }
+
+    setIsStreaming(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const currentIndex = chat.length - 1;
+    setChat((prev) => {
+      const updated = [...prev];
+      updated[currentIndex] = { user: outgoing, bot: '' };
+      return updated;
+    });
+
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (user) headers['Authorization'] = `Bearer ${user.token}`;
+
+      const res = await fetch('/api/chat-stream', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ message: outgoing, conversation_id: currentConvId, history: historyWithoutLast, use_client_history: true }),
+        signal: controller.signal,
+      });
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let botText = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        botText += decoder.decode(value, { stream: true });
+        setChat((prev) => {
+          const updated = [...prev];
+          if (currentIndex >= 0 && currentIndex < updated.length)
+            updated[currentIndex] = { ...updated[currentIndex], bot: botText };
+          return updated;
+        });
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') throw err;
+    } finally {
+      abortRef.current = null;
+      setIsStreaming(false);
+    }
+  };
+
   const send = async () => {
     if (!message.trim()) return;
     if (isStreaming) stop();
@@ -109,5 +168,5 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
     }
   };
 
-  return { chat, message, setMessage, isStreaming, send, stop, loadConversation, newChat };
+  return { chat, message, setMessage, isStreaming, send, stop, retry, loadConversation, newChat };
 }

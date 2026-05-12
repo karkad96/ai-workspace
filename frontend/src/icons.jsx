@@ -78,6 +78,15 @@ export function PlusIcon() {
   );
 }
 
+export function RetryIcon() {
+  return (
+    <svg {...BASE}>
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
+    </svg>
+  );
+}
+
 export function CopyIcon() {
   return (
     <svg {...BASE}>

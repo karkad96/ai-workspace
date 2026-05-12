@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import MessagePair from './MessagePair';
 import styles from './MessageList.module.css';
 
-export default function MessageList({ chat, isStreaming }) {
+export default function MessageList({ chat, isStreaming, onRetry }) {
   const containerRef = useRef(null);
   const anchorRef = useRef(null);
   const isAtBottomRef = useRef(true);
@@ -43,6 +43,8 @@ export default function MessageList({ chat, isStreaming }) {
             userMessage={entry.user}
             botMessage={entry.bot}
             showTyping={isStreaming && i === chat.length - 1}
+            isLast={i === chat.length - 1}
+            onRetry={onRetry}
           />
         ))}
         <div ref={anchorRef} />

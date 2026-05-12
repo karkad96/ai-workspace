@@ -19,6 +19,7 @@ from database import (
     create_conversation,
     create_user,
     delete_conversation,
+    delete_last_message,
     get_conversation,
     get_conversation_messages,
     get_conversations,
@@ -96,6 +97,14 @@ def conversation_messages(conv_id: int, user: TokenData = Depends(get_required_u
     return get_conversation_messages(conv_id, user.user_id)
 
 
+@app.delete("/conversations/{conv_id}/messages/last")
+def remove_last_message(conv_id: int, user: TokenData = Depends(get_required_user)):
+    if not get_conversation(conv_id, user.user_id):
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    delete_last_message(conv_id, user.user_id)
+    return {"ok": True}
+
+
 @app.delete("/conversations/{conv_id}")
 def remove_conversation(conv_id: int, user: TokenData = Depends(get_required_user)):
     if not get_conversation(conv_id, user.user_id):
@@ -108,6 +117,7 @@ class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[int] = None
     history: list[dict] = []
+    use_client_history: bool = False
 
 
 @app.post("/chat-stream")
@@ -124,7 +134,9 @@ async def chat_stream(
         if not get_conversation(conv_id, user.user_id):
             raise HTTPException(status_code=404, detail="Conversation not found")
 
-    if user and conv_id:
+    if req.use_client_history:
+        history = req.history
+    elif user and conv_id:
         history = get_conversation_messages(conv_id, user.user_id)
     else:
         history = req.history
