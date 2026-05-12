@@ -52,6 +52,60 @@
   color: var(--accent);
 }
 
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.searchWrap:focus-within {
+  border-color: var(--accent);
+}
+
+.searchWrap svg {
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--text-h);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--text);
+  opacity: 0.4;
+}
+
+.searchClear {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text);
+  opacity: 0.5;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+
+.searchClear:hover {
+  opacity: 1;
+}
+
 /* ── Conversation list ───────────────────────────────────── */
 
 .list {

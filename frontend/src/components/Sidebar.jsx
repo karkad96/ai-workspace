@@ -1,4 +1,5 @@
-import { PlusIcon, TrashIcon } from '../icons';
+import { useState } from 'react';
+import { PlusIcon, TrashIcon, SearchIcon } from '../icons';
 import styles from './Sidebar.module.css';
 
 function groupByDate(conversations) {
@@ -24,8 +25,37 @@ function groupByDate(conversations) {
   return Object.entries(buckets).filter(([, items]) => items.length > 0);
 }
 
+function ConvItem({ conv, activeId, onSelect, onDelete }) {
+  return (
+    <button
+      className={`${styles.item} ${conv.id === activeId ? styles.active : ''}`}
+      onClick={() => onSelect(conv.id)}
+      title={conv.title}
+    >
+      <span className={styles.itemTitle}>{conv.title}</span>
+      <span
+        className={styles.deleteBtn}
+        role="button"
+        tabIndex={0}
+        aria-label="Delete conversation"
+        onClick={(e) => { e.stopPropagation(); onDelete(conv.id); }}
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onDelete(conv.id); } }}
+      >
+        <TrashIcon />
+      </span>
+    </button>
+  );
+}
+
 export default function Sidebar({ open, conversations, activeId, onSelect, onNew, onDelete, onClose }) {
-  const groups = groupByDate(conversations);
+  const [query, setQuery] = useState('');
+
+  const trimmed = query.trim().toLowerCase();
+  const filtered = trimmed
+    ? conversations.filter((c) => c.title.toLowerCase().includes(trimmed))
+    : null;
+
+  const groups = filtered ? null : groupByDate(conversations);
 
   return (
     <>
@@ -36,37 +66,43 @@ export default function Sidebar({ open, conversations, activeId, onSelect, onNew
             <PlusIcon />
             <span>New chat</span>
           </button>
+          <div className={styles.searchWrap}>
+            <SearchIcon />
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button className={styles.searchClear} onClick={() => setQuery('')} aria-label="Clear search">×</button>
+            )}
+          </div>
         </div>
 
         <div className={styles.list}>
-          {groups.length === 0 && (
-            <p className={styles.empty}>No conversations yet</p>
-          )}
-          {groups.map(([label, items]) => (
-            <div key={label} className={styles.group}>
-              <div className={styles.groupLabel}>{label}</div>
-              {items.map((conv) => (
-                <button
-                  key={conv.id}
-                  className={`${styles.item} ${conv.id === activeId ? styles.active : ''}`}
-                  onClick={() => onSelect(conv.id)}
-                  title={conv.title}
-                >
-                  <span className={styles.itemTitle}>{conv.title}</span>
-                  <span
-                    className={styles.deleteBtn}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Delete conversation"
-                    onClick={(e) => { e.stopPropagation(); onDelete(conv.id); }}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onDelete(conv.id); } }}
-                  >
-                    <TrashIcon />
-                  </span>
-                </button>
+          {filtered ? (
+            filtered.length === 0 ? (
+              <p className={styles.empty}>No results</p>
+            ) : (
+              filtered.map((conv) => (
+                <ConvItem key={conv.id} conv={conv} activeId={activeId} onSelect={onSelect} onDelete={onDelete} />
+              ))
+            )
+          ) : (
+            <>
+              {groups.length === 0 && <p className={styles.empty}>No conversations yet</p>}
+              {groups.map(([label, items]) => (
+                <div key={label} className={styles.group}>
+                  <div className={styles.groupLabel}>{label}</div>
+                  {items.map((conv) => (
+                    <ConvItem key={conv.id} conv={conv} activeId={activeId} onSelect={onSelect} onDelete={onDelete} />
+                  ))}
+                </div>
               ))}
-            </div>
-          ))}
+            </>
+          )}
         </div>
       </aside>
     </>
