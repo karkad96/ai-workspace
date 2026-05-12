@@ -62,7 +62,7 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
     const currentIndex = chat.length - 1;
     setChat((prev) => {
       const updated = [...prev];
-      updated[currentIndex] = { user: outgoing, bot: '' };
+      updated[currentIndex] = { ...prev[currentIndex], bot: '' };
       return updated;
     });
 
@@ -100,11 +100,13 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
     }
   };
 
-  const send = async () => {
-    if (!message.trim()) return;
+  const send = async (images = []) => {
+    if (!message.trim() && images.length === 0) return;
     if (isStreaming) stop();
 
     const outgoing = message.trim();
+    const userImages = images.map((i) => i.dataUrl);
+    const base64Images = images.map((i) => i.base64);
     setMessage('');
     setIsStreaming(true);
 
@@ -115,7 +117,7 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
     let currentIndex = -1;
     setChat((prev) => {
       currentIndex = prev.length;
-      return [...prev, { user: outgoing, bot: '' }];
+      return [...prev, { user: outgoing, userImages, bot: '' }];
     });
 
     try {
@@ -125,7 +127,7 @@ export function useChat(user, onConversationCreated, onConversationBumped) {
       const res = await fetch('/api/chat-stream', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ message: outgoing, conversation_id: currentConvId, history: chat }),
+        body: JSON.stringify({ message: outgoing, conversation_id: currentConvId, history: chat, images: base64Images }),
         signal: controller.signal,
       });
 

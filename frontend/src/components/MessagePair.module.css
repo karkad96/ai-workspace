@@ -27,6 +27,81 @@
   white-space: pre-wrap;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.userImageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.userImage {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+  transition: opacity 0.15s;
+}
+
+.userImage:hover {
+  opacity: 0.85;
+}
+
+/* ── Lightbox ────────────────────────────────────────────── */
+
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightboxImg {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  object-fit: contain;
+  cursor: default;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.lightboxClose:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .bubbleBot {

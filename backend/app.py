@@ -118,6 +118,7 @@ class ChatRequest(BaseModel):
     conversation_id: Optional[int] = None
     history: list[dict] = []
     use_client_history: bool = False
+    images: list[str] = []
 
 
 @app.post("/chat-stream")
@@ -144,7 +145,12 @@ async def chat_stream(
     for turn in history:
         messages.append({"role": "user", "content": turn["user"]})
         messages.append({"role": "assistant", "content": turn["bot"]})
-    messages.append({"role": "user", "content": req.message})
+    user_turn: dict = {"role": "user", "content": req.message}
+    if req.images:
+        user_turn["images"] = req.images
+        print(f"[vision] {len(req.images)} image(s), first image length: {len(req.images[0])} chars", flush=True)
+    messages.append(user_turn)
+    print(f"[chat] sending {len(messages)} messages to ollama, last role: {messages[-1]['role']}, has images: {'images' in messages[-1]}", flush=True)
 
     async def generate():
         full_response = ""

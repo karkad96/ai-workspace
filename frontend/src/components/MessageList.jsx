@@ -41,6 +41,7 @@ export default function MessageList({ chat, isStreaming, onRetry }) {
           <MessagePair
             key={i}
             userMessage={entry.user}
+            userImages={entry.userImages}
             botMessage={entry.bot}
             showTyping={isStreaming && i === chat.length - 1}
             isLast={i === chat.length - 1}
