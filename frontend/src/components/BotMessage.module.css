@@ -44,6 +44,44 @@
   border: 1px solid var(--border);
 }
 
+.codeWrapper {
+  position: relative;
+}
+
+.codeWrapper :global(pre) {
+  margin: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.copyBtn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.copyBtn:hover {
+  color: var(--accent);
+}
+
+.codeWrapper:hover .copyBtn {
+  opacity: 1;
+}
+
 .body :global(pre) {
   margin: 0;
   border-radius: 10px;
